@@ -13,6 +13,24 @@ export function initializeFirebase() {
   }
 
   try {
+    // Check if all required environment variables are present
+    const requiredEnvVars = [
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    ]
+
+    if (requiredEnvVars.some(envVar => !envVar)) {
+      console.log("Firebase environment variables missing, using localStorage")
+      isConfigured = false
+      db = null
+      auth = null
+      return { db, auth, isConfigured }
+    }
+
     const { initializeApp } = require("firebase/app")
     const { getFirestore } = require("firebase/firestore")
     const { getAuth } = require("firebase/auth")
@@ -31,7 +49,7 @@ export function initializeFirebase() {
     auth = getAuth(firebaseApp)
     isConfigured = true
   } catch (error) {
-    console.log("Firebase initialization failed:", error)
+    console.log("Firebase initialization failed, using localStorage:", error)
     isConfigured = false
     db = null
     auth = null

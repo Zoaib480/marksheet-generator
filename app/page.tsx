@@ -24,8 +24,12 @@ import {
 
 interface Subject {
   name: string
-  marks: number
-  maxMarks: number
+  internals: number
+  maxInternals: number
+  practical: number
+  maxPractical: number
+  semesterEnd: number
+  maxSemesterEnd: number
 }
 
 interface StudentData {
@@ -48,9 +52,9 @@ export default function MarksheetGenerator() {
     rollNo: "",
     class: "",
     subjects: [
-      { name: "Mathematics", marks: 0, maxMarks: 100 },
-      { name: "Science", marks: 0, maxMarks: 100 },
-      { name: "English", marks: 0, maxMarks: 100 },
+      { name: "Mathematics", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+      { name: "Science", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+      { name: "English", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
     ],
   })
   const [showMarksheet, setShowMarksheet] = useState(false)
@@ -100,9 +104,9 @@ export default function MarksheetGenerator() {
       rollNo: "",
       class: "",
       subjects: [
-        { name: "Mathematics", marks: 0, maxMarks: 100 },
-        { name: "Science", marks: 0, maxMarks: 100 },
-        { name: "English", marks: 0, maxMarks: 100 },
+        { name: "Mathematics", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+        { name: "Science", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+        { name: "English", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
       ],
     })
   }
@@ -119,29 +123,29 @@ export default function MarksheetGenerator() {
     setSelectedStudent(student)
     setIsNewStudent(false)
 
-    // Load existing marks for this student
     try {
       const marks = await getMarksByStudent(student.id!, teacher.id)
       setExistingMarks(marks)
 
       const subjects = marks.map((mark) => ({
         name: mark.subject,
-        marks: mark.marks,
-        maxMarks: mark.maxMarks,
+        internals: mark.internals,
+        maxInternals: mark.maxInternals,
+        practical: mark.practical,
+        maxPractical: mark.maxPractical,
+        semesterEnd: mark.semesterEnd,
+        maxSemesterEnd: mark.maxSemesterEnd,
       }))
 
       setStudentData({
         name: student.name,
         rollNo: student.rollNo,
         class: student.class,
-        subjects:
-          subjects.length > 0
-            ? subjects
-            : [
-                { name: "Mathematics", marks: 0, maxMarks: 100 },
-                { name: "Science", marks: 0, maxMarks: 100 },
-                { name: "English", marks: 0, maxMarks: 100 },
-              ],
+        subjects: subjects.length > 0 ? subjects : [
+          { name: "Mathematics", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+          { name: "Science", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+          { name: "English", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+        ],
       })
     } catch (error) {
       console.error("Error loading marks:", error)
@@ -157,8 +161,12 @@ export default function MarksheetGenerator() {
 
       const subjects = marks.map((mark) => ({
         name: mark.subject,
-        marks: mark.marks,
-        maxMarks: mark.maxMarks,
+        internals: mark.internals,
+        maxInternals: mark.maxInternals,
+        practical: mark.practical,
+        maxPractical: mark.maxPractical,
+        semesterEnd: mark.semesterEnd,
+        maxSemesterEnd: mark.maxSemesterEnd,
       }))
 
       setStudentData({
@@ -179,7 +187,7 @@ export default function MarksheetGenerator() {
   const addSubject = () => {
     setStudentData((prev) => ({
       ...prev,
-      subjects: [...prev.subjects, { name: "", marks: 0, maxMarks: 100 }],
+      subjects: [...prev.subjects, { name: "", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 }],
     }))
   }
 
@@ -202,11 +210,11 @@ export default function MarksheetGenerator() {
   }
 
   const calculateTotal = () => {
-    return studentData.subjects.reduce((sum, subject) => sum + subject.marks, 0)
+    return studentData.subjects.reduce((sum, subject) => sum + subject.internals + subject.practical + subject.semesterEnd, 0)
   }
 
   const calculateMaxTotal = () => {
-    return studentData.subjects.reduce((sum, subject) => sum + subject.maxMarks, 0)
+    return studentData.subjects.reduce((sum, subject) => sum + subject.maxInternals + subject.maxPractical + subject.maxSemesterEnd, 0)
   }
 
   const calculatePercentage = () => {
@@ -243,7 +251,6 @@ export default function MarksheetGenerator() {
       let studentId: string
 
       if (isNewStudent) {
-        // Create new student
         studentId = await addStudent({
           name: studentData.name,
           rollNo: studentData.rollNo,
@@ -255,30 +262,34 @@ export default function MarksheetGenerator() {
       }
 
       if (!isNewStudent && existingMarks.length > 0) {
-        // Update existing marks
         for (let i = 0; i < studentData.subjects.length; i++) {
           const subject = studentData.subjects[i]
           const existingMark = existingMarks.find((m) => m.subject === subject.name)
 
           if (existingMark) {
-            // Update existing mark
             await updateMark(existingMark.id!, {
-              marks: subject.marks,
-              maxMarks: subject.maxMarks,
+              internals: subject.internals,
+              maxInternals: subject.maxInternals,
+              practical: subject.practical,
+              maxPractical: subject.maxPractical,
+              semesterEnd: subject.semesterEnd,
+              maxSemesterEnd: subject.maxSemesterEnd,
             })
           } else {
-            // Add new mark for new subject
             await addMark({
               studentId,
               subject: subject.name,
-              marks: subject.marks,
-              maxMarks: subject.maxMarks,
+              internals: subject.internals,
+              maxInternals: subject.maxInternals,
+              practical: subject.practical,
+              maxPractical: subject.maxPractical,
+              semesterEnd: subject.semesterEnd,
+              maxSemesterEnd: subject.maxSemesterEnd,
               teacherId: teacher.id,
             })
           }
         }
 
-        // Remove marks for subjects that were deleted
         for (const existingMark of existingMarks) {
           const stillExists = studentData.subjects.some((s) => s.name === existingMark.subject)
           if (!stillExists) {
@@ -286,19 +297,21 @@ export default function MarksheetGenerator() {
           }
         }
       } else {
-        // Save new marks for each subject
         for (const subject of studentData.subjects) {
           await addMark({
             studentId,
             subject: subject.name,
-            marks: subject.marks,
-            maxMarks: subject.maxMarks,
+            internals: subject.internals,
+            maxInternals: subject.maxInternals,
+            practical: subject.practical,
+            maxPractical: subject.maxPractical,
+            semesterEnd: subject.semesterEnd,
+            maxSemesterEnd: subject.maxSemesterEnd,
             teacherId: teacher.id,
           })
         }
       }
 
-      // Reload students list
       await loadStudents()
       setShowMarksheet(true)
       setCurrentView("view-marksheet")
@@ -343,7 +356,6 @@ export default function MarksheetGenerator() {
           </div>
         </div>
 
-        {/* Navigation buttons */}
         <div className="flex gap-2 ml-8">
           <Button variant={currentView === "dashboard" ? "default" : "outline"} size="sm" onClick={navigateToDashboard}>
             <Home className="w-4 h-4 mr-2" />
@@ -394,7 +406,6 @@ export default function MarksheetGenerator() {
             </CardHeader>
 
             <CardContent className="p-8">
-              {/* Student Information */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div>
                   <Label className="text-sm font-semibold text-muted-foreground">Student Name</Label>
@@ -412,7 +423,6 @@ export default function MarksheetGenerator() {
 
               <Separator className="my-6" />
 
-              {/* Marks Table */}
               <div className="mb-8">
                 <h3 className="text-lg font-semibold mb-4">Subject-wise Marks</h3>
                 <div className="border rounded-lg overflow-hidden">
@@ -420,28 +430,35 @@ export default function MarksheetGenerator() {
                     <thead className="bg-muted">
                       <tr>
                         <th className="text-left p-3 font-semibold">Subject</th>
-                        <th className="text-center p-3 font-semibold">Marks Obtained</th>
-                        <th className="text-center p-3 font-semibold">Maximum Marks</th>
+                        <th className="text-center p-3 font-semibold">Internals</th>
+                        <th className="text-center p-3 font-semibold">Practical</th>
+                        <th className="text-center p-3 font-semibold">Semester End</th>
+                        <th className="text-center p-3 font-semibold">Total</th>
                         <th className="text-center p-3 font-semibold">Percentage</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {studentData.subjects.map((subject, index) => (
-                        <tr key={index} className="border-t">
-                          <td className="p-3 font-medium">{subject.name}</td>
-                          <td className="p-3 text-center">{subject.marks}</td>
-                          <td className="p-3 text-center">{subject.maxMarks}</td>
-                          <td className="p-3 text-center">
-                            {subject.maxMarks > 0 ? ((subject.marks / subject.maxMarks) * 100).toFixed(1) : "0.0"}%
-                          </td>
-                        </tr>
-                      ))}
+                      {studentData.subjects.map((subject, index) => {
+                        const total = subject.internals + subject.practical + subject.semesterEnd
+                        const maxTotal = subject.maxInternals + subject.maxPractical + subject.maxSemesterEnd
+                        return (
+                          <tr key={index} className="border-t">
+                            <td className="p-3 font-medium">{subject.name}</td>
+                            <td className="p-3 text-center">{subject.internals}/{subject.maxInternals}</td>
+                            <td className="p-3 text-center">{subject.practical}/{subject.maxPractical}</td>
+                            <td className="p-3 text-center">{subject.semesterEnd}/{subject.maxSemesterEnd}</td>
+                            <td className="p-3 text-center font-semibold">{total}/{maxTotal}</td>
+                            <td className="p-3 text-center">
+                              {maxTotal > 0 ? ((total / maxTotal) * 100).toFixed(1) : "0.0"}%
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Summary */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Card>
                   <CardHeader>
@@ -502,20 +519,12 @@ export default function MarksheetGenerator() {
 
   if (currentView === "dashboard") {
     const totalStudents = students.length
-    const classGroups = students.reduce(
-      (acc, student) => {
-        acc[student.class] = (acc[student.class] || 0) + 1
-        return acc
-      },
-      {} as Record<string, number>,
-    )
 
     return (
       <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto">
           <NavigationHeader />
 
-          {/* Dashboard Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -526,19 +535,6 @@ export default function MarksheetGenerator() {
                 <div className="text-2xl font-bold">{totalStudents}</div>
                 <p className="text-xs text-muted-foreground">
                   {totalStudents === 0 ? "No students yet" : "Students registered"}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Classes</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{Object.keys(classGroups).length}</div>
-                <p className="text-xs text-muted-foreground">
-                  {Object.keys(classGroups).length === 0 ? "No classes yet" : "Different classes"}
                 </p>
               </CardContent>
             </Card>
@@ -557,7 +553,6 @@ export default function MarksheetGenerator() {
             </Card>
           </div>
 
-          {/* Students List */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -625,13 +620,11 @@ export default function MarksheetGenerator() {
     )
   }
 
-  // Create Marksheet View
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto">
         <NavigationHeader />
 
-        {/* Student Selection */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -657,9 +650,9 @@ export default function MarksheetGenerator() {
                     rollNo: "",
                     class: "",
                     subjects: [
-                      { name: "Mathematics", marks: 0, maxMarks: 100 },
-                      { name: "Science", marks: 0, maxMarks: 100 },
-                      { name: "English", marks: 0, maxMarks: 100 },
+                      { name: "Mathematics", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+                      { name: "Science", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
+                      { name: "English", internals: 0, maxInternals: 30, practical: 0, maxPractical: 20, semesterEnd: 0, maxSemesterEnd: 50 },
                     ],
                   })
                 }}
@@ -699,7 +692,6 @@ export default function MarksheetGenerator() {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Student Information Form */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -742,7 +734,6 @@ export default function MarksheetGenerator() {
             </CardContent>
           </Card>
 
-          {/* Subjects and Marks */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -758,52 +749,73 @@ export default function MarksheetGenerator() {
             </CardHeader>
             <CardContent className="space-y-4">
               {studentData.subjects.map((subject, index) => (
-                <div key={index} className="flex gap-2 items-end">
-                  <div className="flex-1">
-                    <Label>Subject Name</Label>
-                    <Input
-                      placeholder="Subject name"
-                      value={subject.name}
-                      onChange={(e) => updateSubject(index, "name", e.target.value)}
-                    />
+                <div key={index} className="space-y-3 p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label>Subject Name</Label>
+                      <Input
+                        placeholder="Subject name"
+                        value={subject.name}
+                        onChange={(e) => updateSubject(index, "name", e.target.value)}
+                      />
+                    </div>
+                    {studentData.subjects.length > 1 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeSubject(index)}
+                        className="text-destructive hover:text-destructive ml-2"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
-                  <div className="w-24">
-                    <Label>Marks</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="0"
-                      value={subject.marks || ""}
-                      onChange={(e) => updateSubject(index, "marks", Number.parseInt(e.target.value) || 0)}
-                    />
+                  
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-sm">Internals (/{subject.maxInternals})</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max={subject.maxInternals}
+                        placeholder="0"
+                        value={subject.internals || ""}
+                        onChange={(e) => updateSubject(index, "internals", Number.parseInt(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Practical (/{subject.maxPractical})</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max={subject.maxPractical}
+                        placeholder="0"
+                        value={subject.practical || ""}
+                        onChange={(e) => updateSubject(index, "practical", Number.parseInt(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Semester End (/{subject.maxSemesterEnd})</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max={subject.maxSemesterEnd}
+                        placeholder="0"
+                        value={subject.semesterEnd || ""}
+                        onChange={(e) => updateSubject(index, "semesterEnd", Number.parseInt(e.target.value) || 0)}
+                      />
+                    </div>
                   </div>
-                  <div className="w-24">
-                    <Label>Max</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      placeholder="100"
-                      value={subject.maxMarks || ""}
-                      onChange={(e) => updateSubject(index, "maxMarks", Number.parseInt(e.target.value) || 100)}
-                    />
+                  
+                  <div className="text-sm text-muted-foreground text-center">
+                    Total: {subject.internals + subject.practical + subject.semesterEnd} / {subject.maxInternals + subject.maxPractical + subject.maxSemesterEnd}
                   </div>
-                  {studentData.subjects.length > 1 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeSubject(index)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
                 </div>
               ))}
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Preview */}
         <Card className="mt-8">
           <CardHeader>
             <CardTitle>Quick Preview</CardTitle>
@@ -833,7 +845,6 @@ export default function MarksheetGenerator() {
           </CardContent>
         </Card>
 
-        {/* Generate Button */}
         <div className="text-center mt-8">
           <Button onClick={generateMarksheet} size="lg" className="px-8">
             <FileText className="w-5 h-5 mr-2" />

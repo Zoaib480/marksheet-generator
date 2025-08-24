@@ -13,8 +13,12 @@ export interface Mark {
   id?: string
   studentId: string
   subject: string
-  marks: number
-  maxMarks: number
+  internals: number
+  maxInternals: number
+  practical: number
+  maxPractical: number
+  semesterEnd: number
+  maxSemesterEnd: number
   teacherId: string
   createdAt: string
 }
