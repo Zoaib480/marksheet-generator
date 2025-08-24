@@ -54,8 +54,8 @@ const getFirebaseOperations = async () => {
 // Student operations
 export const addStudent = async (student: Omit<Student, "id" | "createdAt">) => {
   try {
-    const db = getFirebaseDb()
-    const isConfigured = getFirebaseConfig()
+    const db = await getFirebaseDb()
+    const isConfigured = await getFirebaseConfig()
 
     if (!isConfigured || !db) {
       const students = getFromStorage(STORAGE_KEYS.students)
@@ -103,8 +103,8 @@ export const addStudent = async (student: Omit<Student, "id" | "createdAt">) => 
 
 export const getStudentsByTeacher = async (teacherId: string): Promise<Student[]> => {
   try {
-    const db = getFirebaseDb()
-    const isConfigured = getFirebaseConfig()
+    const db = await getFirebaseDb()
+    const isConfigured = await getFirebaseConfig()
 
     if (!isConfigured || !db) {
       const students = getFromStorage(STORAGE_KEYS.students)
@@ -128,8 +128,8 @@ export const getStudentsByTeacher = async (teacherId: string): Promise<Student[]
 }
 
 export const updateStudent = async (studentId: string, data: Partial<Student>) => {
-  const db = getFirebaseDb()
-  const isConfigured = getFirebaseConfig()
+  const db = await getFirebaseDb()
+  const isConfigured = await getFirebaseConfig()
 
   if (!isConfigured || !db) {
     const students = getFromStorage(STORAGE_KEYS.students)
@@ -156,8 +156,8 @@ export const updateStudent = async (studentId: string, data: Partial<Student>) =
 }
 
 export const deleteStudent = async (studentId: string) => {
-  const db = getFirebaseDb()
-  const isConfigured = getFirebaseConfig()
+  const db = await getFirebaseDb()
+  const isConfigured = await getFirebaseConfig()
 
   if (!isConfigured || !db) {
     const students = getFromStorage(STORAGE_KEYS.students)
@@ -180,8 +180,8 @@ export const deleteStudent = async (studentId: string) => {
 // Marks operations
 export const addMark = async (mark: Omit<Mark, "id" | "createdAt">) => {
   try {
-    const db = getFirebaseDb()
-    const isConfigured = getFirebaseConfig()
+    const db = await getFirebaseDb()
+    const isConfigured = await getFirebaseConfig()
 
     if (!isConfigured || !db) {
       const marks = getFromStorage(STORAGE_KEYS.marks)
@@ -229,8 +229,8 @@ export const addMark = async (mark: Omit<Mark, "id" | "createdAt">) => {
 
 export const getMarksByStudent = async (studentId: string, teacherId: string): Promise<Mark[]> => {
   try {
-    const db = getFirebaseDb()
-    const isConfigured = getFirebaseConfig()
+    const db = await getFirebaseDb()
+    const isConfigured = await getFirebaseConfig()
 
     if (!isConfigured || !db) {
       const marks = getFromStorage(STORAGE_KEYS.marks)
@@ -258,8 +258,8 @@ export const getMarksByStudent = async (studentId: string, teacherId: string): P
 }
 
 export const updateMark = async (markId: string, data: Partial<Mark>) => {
-  const db = getFirebaseDb()
-  const isConfigured = getFirebaseConfig()
+  const db = await getFirebaseDb()
+  const isConfigured = await getFirebaseConfig()
 
   if (!isConfigured || !db) {
     const marks = getFromStorage(STORAGE_KEYS.marks)
@@ -286,8 +286,8 @@ export const updateMark = async (markId: string, data: Partial<Mark>) => {
 }
 
 export const deleteMark = async (markId: string) => {
-  const db = getFirebaseDb()
-  const isConfigured = getFirebaseConfig()
+  const db = await getFirebaseDb()
+  const isConfigured = await getFirebaseConfig()
 
   if (!isConfigured || !db) {
     const marks = getFromStorage(STORAGE_KEYS.marks)

@@ -3,7 +3,7 @@ let db = null
 let auth = null
 let isConfigured = false
 
-export function initializeFirebase() {
+export async function initializeFirebase() {
   if (typeof window === "undefined") {
     return { db: null, auth: null, isConfigured: false }
   }
@@ -31,9 +31,9 @@ export function initializeFirebase() {
       return { db, auth, isConfigured }
     }
 
-    const { initializeApp } = require("firebase/app")
-    const { getFirestore } = require("firebase/firestore")
-    const { getAuth } = require("firebase/auth")
+    const { initializeApp } = await import("firebase/app")
+    const { getFirestore } = await import("firebase/firestore")
+    const { getAuth } = await import("firebase/auth")
 
     const firebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -58,17 +58,17 @@ export function initializeFirebase() {
   return { db, auth, isConfigured }
 }
 
-export function getFirebaseDb() {
-  const { db } = initializeFirebase()
+export async function getFirebaseDb() {
+  const { db } = await initializeFirebase()
   return db
 }
 
-export function getFirebaseAuth() {
-  const { auth } = initializeFirebase()
+export async function getFirebaseAuth() {
+  const { auth } = await initializeFirebase()
   return auth
 }
 
-export function getFirebaseConfig() {
-  const { isConfigured } = initializeFirebase()
+export async function getFirebaseConfig() {
+  const { isConfigured } = await initializeFirebase()
   return isConfigured
 }

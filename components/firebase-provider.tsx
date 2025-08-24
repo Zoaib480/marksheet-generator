@@ -5,7 +5,10 @@ import { initializeFirebase } from "@/lib/firebase"
 
 export function FirebaseProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    initializeFirebase()
+    const init = async () => {
+      await initializeFirebase()
+    }
+    init()
   }, [])
 
   return <>{children}</>

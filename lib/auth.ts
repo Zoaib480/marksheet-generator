@@ -17,8 +17,8 @@ const getFirebaseAuthOperations = async () => {
 
 export const loginTeacher = async (email: string, password: string): Promise<Teacher> => {
   try {
-    const auth = getFirebaseAuth()
-    const isConfigured = getFirebaseConfig()
+    const auth = await getFirebaseAuth()
+    const isConfigured = await getFirebaseConfig()
     
     if (isConfigured && auth) {
       const firebaseOps = await getFirebaseAuthOperations()
@@ -67,8 +67,8 @@ export const loginTeacher = async (email: string, password: string): Promise<Tea
 
 export const registerTeacher = async (email: string, password: string, username: string): Promise<Teacher> => {
   try {
-    const auth = getFirebaseAuth()
-    const isConfigured = getFirebaseConfig()
+    const auth = await getFirebaseAuth()
+    const isConfigured = await getFirebaseConfig()
     
     if (isConfigured && auth) {
       const firebaseOps = await getFirebaseAuthOperations()
@@ -127,8 +127,8 @@ export const registerTeacher = async (email: string, password: string, username:
 
 export const logoutTeacher = async () => {
   try {
-    const auth = getFirebaseAuth()
-    const isConfigured = getFirebaseConfig()
+    const auth = await getFirebaseAuth()
+    const isConfigured = await getFirebaseConfig()
     
     if (isConfigured && auth) {
       const firebaseOps = await getFirebaseAuthOperations()
